@@ -19,30 +19,40 @@ def calcularImpacto(atraso, ideal):
     impacto = ((atraso-ideal)/ideal)*100
     return impacto
 
+def simulaCenario(faixa, temperatura, tipo):
+    #Tipo 1 = Com atraso e ligado
+    #Tipo 2 = Sem atraso e ligado
+    #Tipo 3 = Com atraso e desligado
+    #Tipo 4 = Sem atraso e desligado
+    tempo = 0
+    comportamento = {}
+    while faixa[0] <= temperatura <= faixa[1]:
+        tempo += 1
+        comportamento[tempo] = temperatura
+        if tipo == 1:
+            if tempo > 5:
+                temperatura -= taxa_resfriamento
+        elif tipo == 2:
+            temperatura -= taxa_resfriamento
+        elif tipo == 3:
+            if tempo > 5:
+                temperatura += taxa_aquecimento
+        elif tipo == 4:
+            temperatura += taxa_aquecimento
+    return comportamento
+
 #Main
 
-while faixa_temperatura[0] <= temperatura_inicial <= faixa_temperatura[1]:
-    tempo += 1
-    comportamentoSimulado[tempo] = temperatura_inicial
-    if tempo > 5:
-        temperatura_inicial -= taxa_resfriamento
-    
+#comportamentoSimulado = simulaCenario(faixa_temperatura, temperatura_inicial, 1)
+#comportamentoIdeal = simulaCenario(faixa_temperatura, temperatura_inicial, 2)
+comportamentoSimulado = simulaCenario(faixa_temperatura, temperatura_inicial, 3)
+comportamentoIdeal = simulaCenario(faixa_temperatura, temperatura_inicial, 4)
 
-print(f"O tempo foi: {tempo} minutos com o motor ligado até atingir 0°C com o atraso")
-
-temperatura_inicial = 10
-tempo = 0
-
-while faixa_temperatura[0] <= temperatura_inicial <= faixa_temperatura[1]:
-    tempo += 1
-    comportamentoIdeal[tempo] = temperatura_inicial
-    temperatura_inicial -= taxa_resfriamento
-
+print("Historico do motor com atraso")
 for chave, valor in comportamentoSimulado.items():
     print(f"{chave}: {valor:.2f}")
 
-print(f"\nO tempo foi: {tempo} minutos com o motor ligado até atingir 0°C sem o atraso")
-
+print("\nHistorico do motor sem atraso")
 for chave, valor in comportamentoIdeal.items():
     print(f"{chave}: {valor:.2f}")
 
