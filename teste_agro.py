@@ -8,16 +8,14 @@ atraso_efeito = 5
 temperatura_inicial = 10
 faixa_temperatura = [0, 15]
 tempo = 0
-comportamentoSimulado = {}
-comportamentoIdeal = {}
-tempoFinalAtraso = 0
-tempoFinalIdeal = 0
 
 #Funções
 
 def calcularImpacto(atraso, ideal):
     impacto = ((atraso-ideal)/ideal)*100
-    return impacto
+    print(f"O tempo com o atraso do motor foi: {atraso:.2f}, O tempo sem o atraso do motor foi: {ideal:.2f}")
+    print(f"O impacto do atraso foi de {impacto:.2f}% a mais no tempo")
+    
 
 def simulaCenario(faixa, temperatura, tipo):
     #Tipo 1 = Com atraso e ligado
@@ -30,36 +28,46 @@ def simulaCenario(faixa, temperatura, tipo):
         tempo += 1
         comportamento[tempo] = temperatura
         if tipo == 1:
-            if tempo > 5:
+            if tempo > atraso_efeito:
                 temperatura -= taxa_resfriamento
         elif tipo == 2:
             temperatura -= taxa_resfriamento
         elif tipo == 3:
-            if tempo > 5:
+            if tempo > atraso_efeito:
                 temperatura += taxa_aquecimento
         elif tipo == 4:
             temperatura += taxa_aquecimento
     return comportamento
 
+def ExibirHistoricoTemperaturas(historicoAtraso, historicoIdeal):
+    print("Historico do motor com atraso")
+    for chave, valor in comportamentoSimuladoResfriamento.items():
+        print(f"{chave}: {valor:.2f}")
+
+    print("\nHistorico do motor sem atraso")
+    for chave, valor in comportamentoIdealResfriamento.items():
+        print(f"{chave}: {valor:.2f}")
+
 #Main
 
-#comportamentoSimulado = simulaCenario(faixa_temperatura, temperatura_inicial, 1)
-#comportamentoIdeal = simulaCenario(faixa_temperatura, temperatura_inicial, 2)
-comportamentoSimulado = simulaCenario(faixa_temperatura, temperatura_inicial, 3)
-comportamentoIdeal = simulaCenario(faixa_temperatura, temperatura_inicial, 4)
+#//Simulação linear//
+#/Resfriamento/
+comportamentoSimuladoResfriamento = simulaCenario(faixa_temperatura, temperatura_inicial, 1)
+comportamentoIdealResfriamento = simulaCenario(faixa_temperatura, temperatura_inicial, 2)
 
-print("Historico do motor com atraso")
-for chave, valor in comportamentoSimulado.items():
-    print(f"{chave}: {valor:.2f}")
+#/Aquecimento/
+comportamentoSimuladoAquecimento = simulaCenario(faixa_temperatura, temperatura_inicial, 3)
+comportamentoIdealAquecimento = simulaCenario(faixa_temperatura, temperatura_inicial, 4)
 
-print("\nHistorico do motor sem atraso")
-for chave, valor in comportamentoIdeal.items():
-    print(f"{chave}: {valor:.2f}")
+tempoFinalAtrasoResfriamento = next(reversed(comportamentoSimuladoResfriamento.keys()))
+tempoFinalIdealResfriamento = next(reversed(comportamentoIdealResfriamento.keys()))
+tempoFinalAtrasoAquecimento = next(reversed(comportamentoSimuladoAquecimento.keys()))
+tempoFinalIdealAquecimento = next(reversed(comportamentoIdealAquecimento.keys()))
 
-tempoFinalAtraso = next(reversed(comportamentoSimulado.keys()))
-tempoFinalIdeal = next(reversed(comportamentoIdeal.keys()))
+#/Log refriamento/
+#ExibirHistoricoTemperaturas(comportamentoSimuladoResfriamento, comportamentoIdealResfriamento)
+#calcularImpacto(tempoFinalAtrasoResfriamento, tempoFinalIdealResfriamento)
 
-impacto = calcularImpacto(tempoFinalAtraso, tempoFinalIdeal)
-
-print(f"{tempoFinalAtraso:.2f}, {tempoFinalIdeal:.2f}")
-print(f"O impacto do atraso foi de {impacto:.2f}% a mais no tempo")
+#Log aquecimento
+ExibirHistoricoTemperaturas(comportamentoSimuladoAquecimento, comportamentoIdealAquecimento)
+calcularImpacto(tempoFinalAtrasoAquecimento, tempoFinalIdealAquecimento)
